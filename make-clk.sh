@@ -61,7 +61,7 @@ sudo sed -i "66i\\\tPS1='\${debian_chroot:+(\$debian_chroot)}\\\[\\\033[01;31m\\
 sudo sed -i "\$a\\\necho\nif [ -x /usr/games/fortune ]; then\n    /usr/games/fortune -s\nfi\necho\necho\necho -e \"\\\033[01;30m                 Server maintained by \\\033[01;34mClickwork\\\033[37m|\\\033[01;34mClockwork IT\\\033[37m\!\"\necho" /home/noble/.bashrc
 
 # Customize nanorc default text higlighting
-sudo curl -s https://clickwork.ro/.down/_init/24.04/env.default.nanorc -o /usr/share/nano/default.nanorc
+sudo cp -f confs/env.default.nanorc /usr/share/nano/default.nanorc
 
 # Download & Install CSF
 cd /opt || { echo "Unable to change directory"; exit 1; }
@@ -97,11 +97,10 @@ sudo sed -i 's|SYSLOG_LOG = "/var/log/messages"|SYSLOG_LOG = "/var/log/syslog"|'
 sudo sed -i 's|PS_PORTS = "0:65535,ICMP"|PS_PORTS = "0:65535,ICMP,BRD"|' /etc/csf/csf.conf
 
 # Configure CSF/LFD Exclusions
-sudo curl -s https://clickwork.ro/.down/_init/24.04/csf.pignore.snip | sudo tee --append /etc/csf/csf.pignore > /dev/null
+sudo cat snips/csf.pignore.snip | sudo tee --append /etc/csf/csf.pignore > /dev/null
 
 # Set firewall logfile and #dont# log to syslog
 sudo mkdir /var/log/csf 
-# echo -e "# Log kernel generated firewall log to file\n:msg,contains,\"Firewall:\" /var/log/csf/lfd.fw.log\n\n# Don't log messages to syslog\n& stop" | sudo tee /etc/rsyslog.d/22-firewall.conf
 echo -e "# Log kernel generated firewall log to file\n:msg,contains,\"Firewall:\" /var/log/csf/csf.fw.log" | sudo tee /etc/rsyslog.d/22-firewall.conf > /dev/null
 
 # logrotate firewall logs
@@ -113,7 +112,7 @@ echo -e '
 	compress
 	delaycompress
 	notifempty
-	create 640 root adm
+	create 640 syslog adm
 }' | sudo tee /etc/logrotate.d/csf > /dev/null
 
 
