@@ -2,6 +2,8 @@
 
 set -a													# export all variables
 
+scriptdir=$(pwd)											# set script directory
+
 if [[ $# -eq 0 ]]; then											# if no argument
 	echo
 	read -r -p "Enter domain name: " tld								# ask for domain and read input
@@ -61,13 +63,13 @@ sudo sed -i "66i\\\tPS1='\${debian_chroot:+(\$debian_chroot)}\\\[\\\033[01;31m\\
 sudo sed -i "\$a\\\necho\nif [ -x /usr/games/fortune ]; then\n    /usr/games/fortune -s\nfi\necho\necho\necho -e \"\\\033[01;30m                 Server maintained by \\\033[01;34mClickwork\\\033[37m|\\\033[01;34mClockwork IT\\\033[37m\!\"\necho" /home/noble/.bashrc
 
 # Customize nanorc default text higlighting
-sudo cp -f confs/env.default.nanorc /usr/share/nano/default.nanorc
+sudo cp -f "$scriptdir"/confs/env.default.nanorc /usr/share/nano/default.nanorc
 
 # Download & Install CSF
-cd /opt || { echo "Unable to change directory"; exit 1; }
+cd /opt || { echo "Unable to change into /opt directory"; exit 1; }
 sudo wget https://download.configserver.com/csf.tgz
 sudo tar xzvf csf.tgz
-cd csf || { echo "Unable to change directory"; exit 1; }
+cd csf || { echo "Unable to change into /opt/csf directory"; exit 1; }
 sudo ./install.sh
 
 # temporarily disable firewall
@@ -97,7 +99,7 @@ sudo sed -i 's|SYSLOG_LOG = "/var/log/messages"|SYSLOG_LOG = "/var/log/syslog"|'
 sudo sed -i 's|PS_PORTS = "0:65535,ICMP"|PS_PORTS = "0:65535,ICMP,BRD"|' /etc/csf/csf.conf
 
 # Configure CSF/LFD Exclusions
-sudo cat snips/csf.pignore.snip | sudo tee --append /etc/csf/csf.pignore > /dev/null
+sudo cat "$scriptdir"/snips/csf.pignore.snip | sudo tee --append /etc/csf/csf.pignore > /dev/null
 
 # Set firewall logfile and #dont# log to syslog
 sudo mkdir /var/log/csf 
