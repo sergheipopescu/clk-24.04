@@ -6,9 +6,9 @@ scriptdir=$(pwd)											# set script directory
 
 if [[ $# -eq 0 ]]; then											# if no argument
 	echo
-	read -r -p "Enter domain name: " tld								# ask for domain and read input
+	read -r -p "Enter server fqdn: " fqdn								# ask for domain and read input
 else													# if argument exists
-	tld=$1												# assign tld variable to first argument
+	fqdn=$1												# assign tld variable to first argument
 fi
 
 
@@ -22,7 +22,7 @@ sudo timedatectl set-timezone Europe/Bucharest
 sudo update-locale 'LC_TIME="C.UTF-8"'
 
 # Set hostname
-sudo hostnamectl set-hostname "$tld"
+sudo hostnamectl set-hostname "$fqdn"
 
 # Install packages for customization and cleanup unneeded packages
 sudo apt-get update
@@ -101,7 +101,7 @@ sudo sed -i 's|PS_PORTS = "0:65535,ICMP"|PS_PORTS = "0:65535,ICMP,BRD"|' /etc/cs
 # Configure CSF/LFD Exclusions
 sudo cat "$scriptdir"/snips/csf.pignore.snip | sudo tee --append /etc/csf/csf.pignore > /dev/null
 
-# Set firewall logfile and #dont# log to syslog
+# Copy firewall messages from syslog to firewall logfile
 sudo mkdir /var/log/csf 
 echo -e "# Log kernel generated firewall log to file\n:msg,contains,\"Firewall:\" /var/log/csf/csf.fw.log" | sudo tee /etc/rsyslog.d/22-firewall.conf > /dev/null
 
