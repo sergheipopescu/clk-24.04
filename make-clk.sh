@@ -37,7 +37,7 @@ else													# if argument exists
 fi
 
 tput civis 												# disable cursor
-\033[0m													# color off
+echo -e "\033[0m"											# color off
 
 ###################
 ## Customization ##
