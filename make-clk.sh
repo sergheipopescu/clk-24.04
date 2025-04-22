@@ -117,7 +117,6 @@ sed -i "66i\\\tPS1='\${debian_chroot:+(\$debian_chroot)}\\\[\\\033[01;31m\\\]\\\
 sed -i "\$a\\\necho\nif [ -x /usr/games/fortune ]; then\n    /usr/games/fortune -s\nfi\necho\necho\necho -e \"\\\033[01;30m                 Server maintained by \\\033[01;34mClickwork\\\033[37m|\\\033[01;34mClockwork IT\\\033[37m\!\"\necho" /home/noble/.bashrc
 
 # Customize nanorc default text higlighting
-echo
 cp -f "$scriptdir"/confs/env.default.nanorc /usr/share/nano/default.nanorc
 okay
 
@@ -126,8 +125,8 @@ okay
 echo
 echo -n "Download and install CSF ........................ "
 cd /opt || { echo "Unable to change into /opt directory"; exit 1; }
-wget https://download.configserver.com/csf.tgz
-tar xzvf csf.tgz
+wget https://download.configserver.com/csf.tgz &> /dev/null
+tar xzvf csf.tgz &> /dev/null
 cd csf || { echo "Unable to change into /opt/csf directory"; exit 1; }
 
 spinny & ./install.sh &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
@@ -167,7 +166,7 @@ okay
 # Configure CSF/LFD Exclusions
 echo
 echo -n "Configure LFD exclusions ........................ "
-cat "$scriptdir"/snips/csf.pignore.snip >> /etc/csf/csf.pignore || fail ; okay
+cat snips/csf.pignore.snip >> /etc/csf/csf.pignore || fail ; okay
 
 # Copy firewall messages from syslog to firewall logfile
 echo
