@@ -59,7 +59,7 @@ echo -n "Running more upgrades ........................... "
 spinny & DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 echo
 echo -n "Installing misc software ........................ "
-spinny & apt-get install mc nano libwww-perl haveged fortune-mod software-properties-common dirmngr apt-transport-https argon2 -y
+spinny & apt-get install mc nano libwww-perl haveged fortune-mod software-properties-common dirmngr apt-transport-https argon2 btop -y &> /dev/null
 apt-get --no-install-recommends -y install landscape-common &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 echo
 echo -n "Uninstalling ufw ................................ " 
