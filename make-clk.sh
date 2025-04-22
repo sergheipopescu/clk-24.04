@@ -21,14 +21,23 @@ spinny () {
 }
 
 
+##
+# Start script
+##
+
+clear													# clear the screen
+
 if [[ $# -eq 0 ]]; then											# if no argument
 	echo
-	read -r -p "Enter server fqdn: " fqdn								# ask for domain and read input
+	echo
+	echo
+	read -r -p "		Enter server hostname fqdn: \033[1;36m" fqdn								# ask for domain and read input
 else													# if argument exists
 	fqdn=$1												# assign tld variable to first argument
 fi
 
 tput civis 												# disable cursor
+\033[0m													# color off
 
 ###################
 ## Customization ##
