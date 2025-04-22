@@ -128,11 +128,6 @@ cd csf || { echo "Unable to change into /opt/csf directory"; exit 1; }
 
 spinny & ./install.sh &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
-# temporarily disable firewall
-echo -n "Disable firewall temporarily .................... "
-spinny & csf -x &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-
-
 hostname=$(hostname)
 
 # Configure CSF
@@ -200,11 +195,6 @@ spinny & apt-get dist-upgrade -y &> /dev/null || fail ; { okay; kill $! && wait 
 ################################
 ## Enable firewall and reboot ##
 ################################
-echo
-echo -n "Enabling firewall ............................... "
-spinny & 
-csf -e &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-
 echo
 echo -n "Cleanup ......................................... "
 spinny & apt-get autoremove -y &> /dev/null & apt-get autoclean -y &> /dev/null
