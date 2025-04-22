@@ -6,7 +6,7 @@
 
 set -a													# export all variables
 
-scriptdir=$(dirname "$0")										# set script directory
+scriptdir=$(dirname "$(realpath "$0")") 								# set script directory
 
 okay () {
 	echo -e "[\033[32m OK \033[0m]\n"								# print okay function
@@ -38,39 +38,38 @@ fi
 
 tput civis 												# disable cursor
 echo -e "\033[0m"											# color off
+echo
+echo
 
 ###################
 ## Customization ##
 ###################
 
 # Set timezone and 24h clock
-echo
 echo -n "Setting timezone and 24h clock .................. "
 timedatectl set-timezone Europe/Bucharest
 update-locale 'LC_TIME="C.UTF-8"'
 okay
 
 # Set hostname
-echo
 echo -n "Setting hostname ................................ "
 hostnamectl set-hostname "$fqdn"
 okay
 
 # Install packages for customization and cleanup unneeded packages
-echo
 echo -n "Running update .................................. "
 spinny & apt-get update &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-echo
+
 echo -n "Running upgrades ................................ "
 spinny & DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confold" upgrade &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-echo
+
 echo -n "Running more upgrades ........................... "
 spinny & DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-echo
+
 echo -n "Installing misc software ........................ "
 spinny & apt-get install mc nano libwww-perl haveged fortune-mod software-properties-common dirmngr apt-transport-https argon2 btop -y &> /dev/null
 apt-get --no-install-recommends -y install landscape-common &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-echo
+
 echo -n "Uninstalling ufw ................................ " 
 spinny & apt-get remove ufw -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
@@ -82,7 +81,6 @@ sed -i 's|#Port 22|Port 2282|' /etc/ssh/sshd_config
 okay
 
 # Allow password authentication
-echo
 echo -n "Configure SSH server password authentication .... "
 sed -i 's|PasswordAuthentication no|PasswordAuthentication yes|' /etc/ssh/sshd_config
 
@@ -109,7 +107,6 @@ sed -Ezi.orig \
 okay
 
 # Customize login environment for user
-echo
 echo -n "Customize bash & nano ........................... "
 sed -i '44,54 s/^/#/' /etc/bash.bashrc
 sed -i '38,64 s/^/#/' /home/noble/.bashrc
@@ -132,7 +129,6 @@ cd csf || { echo "Unable to change into /opt/csf directory"; exit 1; }
 spinny & ./install.sh &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
 # temporarily disable firewall
-echo
 echo -n "Disable firewall temporarily .................... "
 spinny & csf -x &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
@@ -140,7 +136,6 @@ spinny & csf -x &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 hostname=$(hostname)
 
 # Configure CSF
-echo
 echo -n "Configure CSF ................................... "
 sed -i 's|TESTING = "1"|TESTING = "0"|' /etc/csf/csf.conf
 sed -i '/TCP_IN =/c\TCP_IN = "2282"' /etc/csf/csf.conf
@@ -164,19 +159,15 @@ sed -i 's|PS_PORTS = "0:65535,ICMP"|PS_PORTS = "0:65535,ICMP,BRD"|' /etc/csf/csf
 okay
 
 # Configure CSF/LFD Exclusions
-echo
 echo -n "Configure LFD exclusions ........................ "
-cat snips/csf.pignore.snip >> /etc/csf/csf.pignore || fail ; okay
+cat "$scriptdir"/snips/csf.pignore.snip >> /etc/csf/csf.pignore || fail ; okay
 
 # Copy firewall messages from syslog to firewall logfile
-echo
 echo -n "Create firewall log ............................. "
 mkdir /var/log/csf 
 echo -e "# Log kernel generated firewall log to file\n:msg,contains,\"Firewall:\" /var/log/csf/csf.fw.log" > /etc/rsyslog.d/22-firewall.conf || fail ; okay
-okay
 
 # logrotate firewall logs
-echo
 echo -n "Create logrotate for firewall logs .............. "
 echo -e '
 /var/log/csf/*.log {
@@ -197,10 +188,10 @@ echo -e '
 echo
 echo -n "Running update .................................. "
 spinny & apt-get update &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-echo
+
 echo -n "Running upgrades ................................ "
 spinny & apt-get upgrade -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
-echo
+
 echo -n "Running more upgrades ........................... "
 spinny & apt-get dist-upgrade -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
@@ -211,15 +202,16 @@ spinny & apt-get dist-upgrade -y &> /dev/null || fail ; { okay; kill $! && wait 
 ################################
 echo
 echo -n "Enabling firewall ............................... "
-spinny &
+spinny & 
 csf -e &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
 echo
 echo -n "Cleanup ......................................... "
+spinny & apt-get autoremove -y &> /dev/null & apt-get autoclean -y &> /dev/null
 rm -rf "$scriptdir" || fail ; okay
 
 echo
 echo -e "Rebooting ................................... \033[32m-->"
 
 tput cnorm 													# enable cursor
-reboot
+reboot &> /dev/null
