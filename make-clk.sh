@@ -31,9 +31,9 @@ if [[ $# -eq 0 ]]; then											# if no argument
 	echo
 	echo
 	echo
-	read -r -p "		Enter server hostname fqdn: \033[1;36m" fqdn								# ask for domain and read input
+	read -r -p "$(echo -e "		Enter server hostname fqdn: \033[1;36m")" fqdn								# ask for domain and read input
 else													# if argument exists
-	fqdn=$1												# assign tld variable to first argument
+	fqdn=$1												# assign fqdn variable to first argument
 fi
 
 tput civis 												# disable cursor
