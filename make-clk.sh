@@ -137,7 +137,7 @@ sed -i '/TCP_IN =/c\TCP_IN = "2282"' /etc/csf/csf.conf
 sed -i '/TCP_OUT =/c\TCP_OUT = "20,21,25,53,80,113,443,2282,11371"' /etc/csf/csf.conf
 sed -i '/UDP_IN =/c\UDP_IN = ""' /etc/csf/csf.conf
 sed -i '/UDP_OUT =/c\UDP_OUT = "20,21,53,113,123"' /etc/csf/csf.conf
-sed -i '/ICMP_IN =/c\ICMP_IN = "0"' /etc/csf/csf.conf
+#sed -i '/ICMP_IN =/c\ICMP_IN = "0"' /etc/csf/csf.conf
 sed -i 's|IPV6 = "0"|IPV6 = "1"|' /etc/csf/csf.conf
 sed -i '/TCP6_IN =/c\TCP6_IN = ""' /etc/csf/csf.conf
 sed -i '/TCP6_OUT =/c\TCP6_OUT = ""' /etc/csf/csf.conf
