@@ -176,6 +176,9 @@ echo -e '
 }' > /etc/logrotate.d/csf || fail ; okay
 
 
+# install generic certbot
+echo -n "Installing certbot for nginx .................... "
+spinny & apt-get install python3-certbot-nginx -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
 ###########################
 ## Last update & upgrade ##
