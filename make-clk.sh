@@ -176,9 +176,52 @@ echo -e '
 }' > /etc/logrotate.d/csf || fail ; okay
 
 
-# install generic certbot
-echo -n "Installing certbot for nginx .................... "
+#####################
+## Install certbot ##
+#####################
+echo
+echo -n "Install certbot for nginx ....................... "
 spinny & apt-get install python3-certbot-nginx -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
+
+
+#####################
+## Install postfix ##
+#####################
+echo
+echo -n "Install postfix .................................."
+debconf-set-selections <<< "postfix postfix/mailname string $hostname"
+debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+spinny & apt-get install --assume-yes postfix &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
+
+# configure postfix
+echo -n "Configure postfix ................................"
+
+# modify listening ports
+sudo sed -i "/inet_interfaces/c\inet_interfaces = localhost" /etc/postfix/main.cf
+
+
+#configure SSL certificates (for sending)
+sudo sed -i "/smtpd_tls_cert_file/c\smtpd_tls_cert_file=/etc/letsencrypt/live/$hostname/fullchain.pem" /etc/postfix/main.cf
+sudo sed -i "/smtpd_tls_key_file/c\smtpd_tls_key_file=/etc/letsencrypt/live/$hostname/privkey.pem" /etc/postfix/main.cf
+
+# modify postfix logging
+sudo mkdir /var/log/postfix
+sudo postconf maillog_file=/var/log/postfix/mail.log
+
+# logrotate postfix logs
+echo -e '
+/var/log/postfix/*.log {
+	daily
+	missingok
+	rotate 30
+	compress
+	delaycompress
+	notifempty
+	create 640 root adm
+	dateext
+}' | sudo tee /etc/logrotate.d/postfix > /dev/null
+okay
+
 
 ###########################
 ## Last update & upgrade ##
