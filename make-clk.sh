@@ -159,7 +159,10 @@ cat "$scriptdir"/snips/csf.pignore.snip >> /etc/csf/csf.pignore || fail ; okay
 
 # Copy firewall messages from syslog to firewall logfile
 echo -n "Create firewall log ............................. "
-mkdir /var/log/csf 
+mkdir /var/log/csf
+touch /var/log/csf/csf.fw.log
+chmod 640 /var/log/csf/csf.fw.log
+chown syslog:adm /var/log/csf/csf.fw.log
 echo -e "# Log kernel generated firewall log to file\n:msg,contains,\"Firewall:\" /var/log/csf/csf.fw.log" > /etc/rsyslog.d/22-firewall.conf || fail ; okay
 
 # logrotate firewall logs
