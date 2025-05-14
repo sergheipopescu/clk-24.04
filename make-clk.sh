@@ -178,6 +178,10 @@ echo -e '
 	create 640 syslog adm
 }' > /etc/logrotate.d/csf || fail ; okay
 
+# Install clkcsf
+cp -f "$scriptdir"/scripts/clkcsf /usr/sbin/clkcsf
+chmod +x /usr/sbin/clkcsf
+
 
 #####################
 ## Install certbot ##
