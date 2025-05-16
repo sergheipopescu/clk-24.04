@@ -155,7 +155,7 @@ okay
 
 # Whitelist gateway ip address
 echo -n "Whitelist gateway IP address .................... "
-ip route show | grep -i 'default via'| awk '{print $3 }' | tee --append /etc/csf/csf.allow >/dev/null || fail ; okay
+ip route show | grep -i 'default via'| awk '{print $3 }' | tee --append /etc/csf/csf.ignore >/dev/null || fail ; okay
 
 # Configure CSF/LFD Exclusions
 echo -n "Configure LFD exclusions ........................ "
