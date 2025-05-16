@@ -179,8 +179,8 @@ echo -e '
 }' > /etc/logrotate.d/csf || fail ; okay
 
 # Install clkcsf
-cp -f "$scriptdir"/scripts/clkcsf /usr/sbin/clkcsf
-chmod +x /usr/sbin/clkcsf
+cp -f "$scriptdir"/scripts/clkcsf /usr/sbin/clkcsf || fail
+chmod +x /usr/sbin/clkcsf || fail
 
 
 #####################
