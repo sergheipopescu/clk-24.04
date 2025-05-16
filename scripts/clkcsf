@@ -6,7 +6,7 @@
 
 set -a	# export all variables
 
-csfdir=/home/noble
+csfdir=/etc/csf
 
 readport() {
 
