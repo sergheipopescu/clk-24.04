@@ -8,6 +8,12 @@ set -a	# export all variables
 
 csfdir=/etc/csf
 
+
+csfr () {
+
+	csf -r |  grep "Error\|*WARNING*"
+}
+
 readport() {
 
 	grep "$direction" "$csfdir/csf.conf" | cut -d'"' -f 2
@@ -30,6 +36,7 @@ openport() {
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ]; then		# check if argument is a port number
 
 			writeport
+			csfr
 		else
 			echo
 			echo -e "\n \033[1;91m Wrong port number format:\033[0m\033[0;31m $port\033[0m"		# print error
@@ -72,7 +79,7 @@ addip () {
 				echo
 				echo -e "$ipaddr" | tee --append "$csfdir/$csfile" > /dev/null
 				echo -e "\n \033[1;92m Successfully\033[0m added $ipaddr to $csfile"
-			
+				csfr
 			fi
 
 		else
@@ -87,16 +94,17 @@ addip () {
 help () {
 
 	echo
-	echo "clkcsf usage: -i <incomig port>; -o <outgoing port>; -i <ignore IP>; -a <allow IP>"
+	echo -e "clkcsf usage: \n\n-i <incomig port>; \n-o <outgoing port>; \n-i <ignore IP>; \n-a <allow IP>; \n-p displays ignored/allowed IPs; \n-t displays open ports; \n-r restarts CSF and LFD services; \n-h displays this help"
 	echo
 }
+
 
 
 ###
 ## Flags
 ###
 
-while getopts ":a:g:i:o:" flag; do
+while getopts ":a:g:i:o:hprt" flag; do
 
 	case "${flag}" in
 
@@ -130,6 +138,32 @@ while getopts ":a:g:i:o:" flag; do
 			echo -e "Currently \033[0;32mallowed\033[0m IP addresses:"
 			grep -v '#'  "$csfdir/$csfile"
 			echo
+		;;
+
+                t)      csfile=csf.conf
+                        echo
+                        grep -iR "TCP_IN = " "$csfdir/$csfile"
+                        echo
+                        grep -iR "TCP_OUT = " "$csfdir/$csfile"
+			echo
+                ;;
+
+                p)      echo
+                        echo
+                        echo -e "Currently \033[0;33mignored\033[0m IP addresses:"
+                        grep -v '#'  "$csfdir/csf.ignore"
+                        echo
+                        echo
+                        echo -e "Currently \033[0;32mallowed\033[0m IP addresses:"
+                        grep -v '#'  "$csfdir/csf.allow"
+                        echo
+                ;;
+
+		r)	systemctl restart csf lfd
+			echo -e "\nCSF & LFD restarted!"
+		;;
+
+		h)	help
 		;;
 
 		:)	help

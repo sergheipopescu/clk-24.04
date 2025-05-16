@@ -153,6 +153,10 @@ sed -i 's|SYSLOG_LOG = "/var/log/messages"|SYSLOG_LOG = "/var/log/syslog"|' /etc
 sed -i 's|PS_PORTS = "0:65535,ICMP"|PS_PORTS = "0:65535,ICMP,BRD"|' /etc/csf/csf.conf
 okay
 
+# Whitelist gateway ip address
+echo -n "Whitelist gateway IP address .................... "
+ip route show | grep -i 'default via'| awk '{print $3 }' | tee --append /etc/csf/csf.allow >/dev/null || fail ; okay
+
 # Configure CSF/LFD Exclusions
 echo -n "Configure LFD exclusions ........................ "
 cat "$scriptdir"/snips/csf.pignore.snip >> /etc/csf/csf.pignore || fail ; okay
