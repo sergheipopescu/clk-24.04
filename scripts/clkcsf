@@ -37,7 +37,7 @@ openport() {
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ]; then		# check if argument is a port number
 
 			writeport
-			csfr
+#			csfr
 		else
 			echo
 			echo -e "\n \033[1;91m Wrong port number format:\033[0m\033[0;31m $port\033[0m"		# print error
@@ -80,7 +80,7 @@ addip () {
 				echo
 				echo -e "$ipaddr" | tee --append "$csfdir/$csfile" > /dev/null
 				echo -e "\n \033[1;92m Successfully\033[0m added $ipaddr to $csfile"
-				csfr
+#				csfr
 			fi
 
 		else
@@ -112,6 +112,7 @@ while getopts ":a:g:i:o:hprt" flag; do
 		i) 	direction="TCP_IN = "
 			openport
 			echo
+			csfr
 			echo -e "Currently \033[0;32mopen\033[0m incoming ports: $(readport)"
 			echo
 		;;
@@ -119,6 +120,7 @@ while getopts ":a:g:i:o:hprt" flag; do
 		o) 	direction="TCP_OUT = "
 			openport
 			echo
+			csfr
 			echo -e "Currently \033[0;32mopen\033[0m outgoing ports: $(readport)"
 			echo
 		;;
@@ -127,6 +129,7 @@ while getopts ":a:g:i:o:hprt" flag; do
 			addip
 			echo
 			echo
+			csfr
 			echo -e "Currently \033[0;33mignored\033[0m IP addresses:"
 			grep -v '#'  "$csfdir/$csfile"
 			echo
@@ -136,6 +139,7 @@ while getopts ":a:g:i:o:hprt" flag; do
 			addip
 			echo
 			echo
+			csfr
 			echo -e "Currently \033[0;32mallowed\033[0m IP addresses:"
 			grep -v '#'  "$csfdir/$csfile"
 			echo
