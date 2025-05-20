@@ -11,7 +11,6 @@ csfdir=/etc/csf
 
 csfr () {
 
-	systemctl restart csf lfd
 	csf -r |  grep "Error\|*WARNING*"
 }
 
@@ -129,6 +128,7 @@ while getopts ":a:g:i:o:hprt" flag; do
 			addip
 			echo
 			echo
+			systemctl restart csf lfd
 			csfr
 			echo -e "Currently \033[0;33mignored\033[0m IP addresses:"
 			grep -v '#'  "$csfdir/$csfile"
