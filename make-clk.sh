@@ -258,7 +258,8 @@ spinny & apt-get autoremove -y &> /dev/null & apt-get autoclean -y &> /dev/null
 rm -rf "$scriptdir" || fail ; okay
 
 echo
-echo -e "Rebooting ........................................   \033[32m-->"
+echo -e "Rebooting ........................................  \033[32m-->\033[0m"
 
 tput cnorm 													# enable cursor
 reboot &> /dev/null
+echo -e "[\033[32m OK \033[0m]\n"
