@@ -11,6 +11,7 @@ csfdir=/etc/csf
 
 csfr () {
 
+	systemctl restart csf lfd
 	csf -r |  grep "Error\|*WARNING*"
 }
 
