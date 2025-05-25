@@ -94,7 +94,7 @@ addip () {
 help () {
 
 	echo
-	echo -e "clkcsf usage: \n\n-i <incomig port>; \n-o <outgoing port>; \n-i <ignore IP>; \n-a <allow IP>; \n-p displays ignored/allowed IPs; \n-t displays open ports; \n-r restarts CSF and LFD services; \n-h displays this help"
+	echo -e "clkcsf usage: \n\n-i <incomig port>; \n-o <outgoing port>; \n-g <ignore IP>; \n-a <allow IP>; \n-p displays ignored/allowed IPs; \n-t displays open ports; \n-r restarts CSF and LFD services; \n-h displays this help"
 	echo
 }
 
