@@ -182,6 +182,6 @@ while getopts ":a:g:i:o:hprt" flag; do
 done
 
 if [ "$#" == 0 ]; then
-        help
-        exit 1
+	help
+	exit 1
 fi
