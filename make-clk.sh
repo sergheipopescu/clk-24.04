@@ -67,7 +67,7 @@ echo -n "Running more upgrades ........................... "
 spinny & DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
 echo -n "Installing misc software ........................ "
-spinny & apt-get install mc nano libwww-perl haveged fortune-mod software-properties-common dirmngr apt-transport-https argon2 btop -y &> /dev/null
+spinny & apt-get install mc nano libwww-perl haveged fortune-mod software-properties-common dirmngr apt-transport-https argon2 btop linux-azure -y &> /dev/null
 apt-get --no-install-recommends -y install landscape-common &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
 echo -n "Uninstalling ufw ................................ " 
@@ -185,6 +185,10 @@ echo -e '
 # Install clkcsf
 cp -f "$scriptdir"/scripts/clkcsf /usr/sbin/clkcsf || fail
 chmod +x /usr/sbin/clkcsf || fail
+
+# Install crnkcln
+cp -f "$scriptdir"/scripts/krnlcln /usr/sbin/krnlcln || fail
+chmod +x /usr/sbin/krnlcln|| fail
 
 
 #####################

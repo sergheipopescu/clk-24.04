@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+echo
+
+IN_USE=$(uname -a | awk '{ print $3 }')
+echo "Your in use kernel is $IN_USE"
+
+CUR_KERNELS=$(dpkg --get-selections | grep linux-image | grep install | awk '{print $1}')
+echo
+echo "Current Kernels are:"
+echo "$CUR_KERNELS"
+
+OLD_KERNELS=$(dpkg --get-selections | grep linux | grep deinstall | awk '{print $1}')
+echo
+echo "Old Kernels to be removed:"
+echo "$OLD_KERNELS"
+
+if [ "$1" == "exec" ]; then
+	apt-get purge "$OLD_KERNELS"
+fi
