@@ -204,9 +204,9 @@ chmod +x /usr/sbin/krnlcln|| fail
 #####################
 ## Install certbot ##
 #####################
-echo
-echo -n "Install certbot for nginx ....................... "
-spinny & apt-get install python3-certbot-nginx -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
+#echo
+#echo -n "Install certbot for nginx ....................... "
+#spinny & apt-get install python3-certbot-nginx -y &> /dev/null || fail ; { okay; kill $! && wait $!; } 2>/dev/null
 
 
 #####################
