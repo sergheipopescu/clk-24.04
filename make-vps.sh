@@ -51,6 +51,16 @@ timedatectl set-timezone Europe/Bucharest
 update-locale 'LC_TIME="C.UTF-8"'
 okay
 
+# Add sudo user with full name. Will be prompted for password
+sudo adduser noble --gecos "Clickwork IT Admin" --disabled-password
+
+# Add sudo user to the admin group
+sudo addgroup --system admin; echo "%admin ALL=(ALL) ALL" >> /etc/sudoers && adduser noble admin
+
+# Copy root ssh key to sudo user profile
+sudo cp -r /root/.ssh /home/noble
+sudo chown -R noble /home/noble/.ssh
+
 # Set hostname
 echo -n "Setting hostname ................................ "
 hostnamectl set-hostname "$fqdn"
