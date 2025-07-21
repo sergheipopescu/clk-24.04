@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo -e "\033[1;34m\n\n Reloading lamp stack ...\033[0m\n"
+
+{ echo -e "\033[36m\ntesting nginx config...\033[0m\n"; sudo nginx -q -t; } || { echo -e "\n\033[1;91mnginx config test failed. Review errors and retry\n"; exit 1; }
+{ echo -e "\033[36m\n\ntesting apache config...\033[0m\n"; sudo apachectl -t; } || { echo -e "\n\033[1;91mapache config test failed. Review errors and retry\n"; exit 1; }
+{ echo -e "\033[36m\n\ntesting php-fpm8.4 config...\033[0m\n"; sudo php-fpm8.4 -t; } || { echo -e "\n\033[1;91mphp-fpm config test failed. Review errors and retry\n"; exit 1; }
+{ echo -e "\033[36m\n\ntesting php-fpm7.4 config...\033[0m\n"; sudo php-fpm7.4 -t; } || { echo -e "\n\033[1;91mphp-fpm config test failed. Review errors and retry\n"; exit 1; }
+
+sudo systemctl reload nginx apache2 php8.4-fpm php7.4-fpm
+
+sudo systemctl restart pure-ftpd-mysql postfix
+
+echo
+# shellcheck disable=SC2034
+for run in {1..10}; do { echo -n "."; sleep 0.05; }; done; echo -e "\033[1;32m   Stack reloaded! \033[0m \n"

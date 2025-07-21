@@ -1,0 +1,6 @@
+
+
+<VirtualHost *:9080>
+	ServerName www.$tld
+	Redirect / https://$tld
+</VirtualHost>

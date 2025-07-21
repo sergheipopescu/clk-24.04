@@ -1,0 +1,7 @@
+<VirtualHost *:9080>
+	ServerAdmin postmaster@$tld
+	ServerName $tld
+	DocumentRoot /var/www/$tld/
+	ErrorLog /var/log/apache2/${tld}_errors.log
+	CustomLog /var/log/apache2/${tld}_access.log loghost
+</VirtualHost>

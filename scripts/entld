@@ -1,0 +1,135 @@
+#!/bin/bash
+# shellcheck disable=SC2016
+
+set -a										# export all variables
+
+mdbpass=$(sudo grep -oP "mariaDB password is:\s+\K\w+" /root/salt)		# get MariaDB root password
+
+dircnf() {
+	sudo mkdir /var/www/"$fqdn"			; echo -e "\033[36m$fqdn\033[0m webroot directory \033[32mcreated\033[0m\n";
+	sudo chmod -R 0750 /var/www/"$fqdn"		; echo -e "\033[36m$fqdn\033[0m webroot directory permissions \033[32mset\033[0m\n";
+	sudo chown -R pftpd:www-data /var/www/"$fqdn"	; echo -e "\033[36m$fqdn\033[0m webroot directory owner and group \033[32mset\033[0m\n";
+	sudo ln -s /etc/apache2/sites-available/"$fqdn".conf /etc/apache2/sites-enabled/"$fqdn".conf ; echo -e "\033[36m$fqdn\033[0m apache site \033[32menabled\033[0m\n";
+	sudo ln -s /etc/nginx/sites-available/"$fqdn" /etc/nginx/sites-enabled/"$fqdn" ; echo -e "\033[36m$fqdn\033[0m nginx site \033[32menabled\033[0m\n";
+}
+
+genpass() {
+	fqdnpass=$(openssl rand -base64 15)						# create random password for database/ftp
+	sodium=$(echo $RANDOM | md5sum | head -c 20)					# create random salt for argon2
+	argon=$(echo -n "$fqdnpass" | argon2 "$sodium" -id | grep Encoded | awk '{ print $2}') # create argon2 hash of the password 
+	echo -e "\nThe $fqdn password is:	$fqdnpass\nThe $fqdn argon hash is:	$argon" | sudo tee --append /root/salt > /dev/null; 
+
+	echo -e 'CREATE DATABASE `$fqdn`;
+		GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON `$fqdn`.* TO `$fqdn`@"localhost" IDENTIFIED BY "$fqdnpass";
+		FLUSH PRIVILEGES;
+		USE pftpd;
+		INSERT INTO ftpd (User, status, Password, Uid, Gid, Dir, ULBandwidth, DLBandwidth, comment, ipaccess, QuotaSize, QuotaFiles) VALUES ("$fqdn", "1", "$argon", "2001", "33", "/var/www/$fqdn", "0", "0", "", "*", "0", "0");
+	'| envsubst | mariadb -umariadmin -p"$mdbpass";
+}
+
+vhost()	{
+	< /etc/apache2/vhosts/a2.vhost envsubst '$fqdn' |					# substitute current variable in read vhost
+	tee /etc/apache2/sites-available/"$fqdn".conf > /dev/null
+
+	< /etc/nginx/blocks/ngx.srvblock envsubst '$fqdn' |					# substitute current variable in read vhost
+	tee /etc/nginx/sites-available/"$fqdn" > /dev/null
+}
+
+whost()	{
+	< /etc/apache2/vhosts/a2.whost envsubst '$fqdn' |					# substitute current variable in read vhost
+	tee /etc/apache2/sites-available/"$fqdn".conf > /dev/null
+
+	< /etc/nginx/blocks/ngx.srwblock envsubst '$fqdn' |					# substitute current variable in read vhost
+	tee /etc/nginx/sites-available/"$fqdn" > /dev/null
+}
+
+if [[ "$*" == "" ]]; then											# if no arguments
+
+	echo
+
+	read -r -p "Enter domain name: " fqdn									# Ask for domain and read input
+
+	if [[ "$fqdn" = *.*.* ]]; then										# if sudomain exists
+
+		genpass
+		vhost
+		echo
+		sudo certbot certonly --nginx --non-interactive --agree-tos --quiet -m certs@clickwork.ro -d "$fqdn" ||
+			{
+				echo -e "\n \033[1;91mCertbot errored out\033[0m"
+				exit 1 
+			}
+		echo -e "\033[36m$fqdn\033[0m SSL Certificate \033[32minstalled\033[0m\n"
+		dircnf
+
+	elif [[ "$fqdn" = *.* ]]; then										# if there is no subdomain
+
+		genpass
+		vhost
+		whost
+		echo
+		sudo certbot certonly --nginx --non-interactive --agree-tos --quiet -m certs@clickwork.ro -d "$fqdn",www."$fqdn" ||
+			{
+				echo -e "\n \033[1;91mCertbot errored out\033[0m"
+				exit 1
+			}
+		echo -e "\033[36m$fqdn\033[0m SSL Certificate \033[32minstalled\033[0m\n"
+		dircnf
+
+	else													# if the argument is not a domain
+
+		clear												# clear screen
+
+		echo -e "\n \033[1;91m Wrong domain format.\033[0m  \033[0;31m Try again. \033[0m"		# print error
+
+		eval "$(basename "$0")" && exit									# restart script
+
+	fi
+
+else														# if arguments exist
+
+	for fqdn in "$@"; do 											# for each argument
+
+		if [[ "$fqdn" = *.*.* ]]; then 									# if the argument contains a subdomain
+
+			genpass
+			vhost
+			echo
+			sudo certbot certonly --nginx --non-interactive --agree-tos --quiet -m certs@clickwork.ro -d "$fqdn" ||
+				{
+					echo -e "\n \033[1;91mCertbot errored out\033[0m"
+					exit 1
+				}
+			echo -e "\033[36m$fqdn\033[0m SSL Certificate \033[32minstalled\033[0m\n"
+			dircnf
+
+		elif [[ "$fqdn" = *.* ]]; then 									# if the argument has no subdomain
+
+			genpass
+			vhost
+			whost
+			echo
+			sudo certbot certonly --nginx --non-interactive --agree-tos --quiet -m certs@clickwork.ro -d "$fqdn",www."$fqdn" ||
+				{
+					echo -e "\n \033[1;91mCertbot errored out\033[0m"
+					exit 1
+				}
+			echo -e "\033[36m$fqdn\033[0m SSL Certificate \033[32minstalled\033[0m\n"
+			dircnf
+
+		else												# if the argument is not a domain
+
+			clear										# clear screen
+
+			echo -e "\n \033[1;91m Wrong domain format.\033[0m  \033[0;31m Try again. \033[0m" # print error
+
+			eval "$(basename "$0")" && exit							# restart script
+
+		fi
+
+	done
+
+fi
+
+sudo lampstart													# reload lamp stack
+sudo cat /root/salt
