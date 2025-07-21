@@ -767,7 +767,7 @@ echo -e '
 mkdir /etc/apache2/vhosts
 mkdir /etc/nginx/blocks
 cp -f "$scriptdir"/blocks/a2* /etc/apache2/vhosts
-cp- f "$scriptdir"/blocks/ngx* /etc/nginx/blocks
+cp -f "$scriptdir"/blocks/ngx* /etc/nginx/blocks
 
 cp -f "$scriptdir"/scripts/entld /usr/sbin/entld
 cp -f "$scriptdir"/scripts/lampstart /usr/sbin/lampstart
