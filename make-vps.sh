@@ -568,14 +568,8 @@ sed -i 's|ssl_prefer_server_ciphers|# &|' /etc/nginx/nginx.conf
 # Security | Download custom conf 
 cp -f "$scriptdir"/confs/ngx.conf /etc/nginx/conf.d/clk.ngx.conf
 
-# Logging | Download nolog conf
-cp -f "$scriptdir"/snips/clk.ngx.lognone.snip /etc/nginx/snippets/clk.ngx.lognone.snip
-
-# Logging | Download loghost conf
-cp -f "$scriptdir"/snips/clk.ngx.loghost.snip /etc/nginx/snippets/clk.ngx.loghost.snip
-
-# Logging | Download maps conf
-cp -f "$scriptdir"/snips/clk.ngx.maps.snip /etc/nginx/snippets/clk.ngx.maps.snip
+# Logging | Copy snippets
+cp -f "$scriptdir"/snips/clk.ngx* /etc/nginx/snippets/
 
 # Logging | Enable loghost on default settings
 sed -i '/access_log/c\	include /etc/nginx/snippets/clk.ngx.loghost.snip;\n	access_log /var/log/nginx/access.log loghost;' /etc/nginx/nginx.conf
