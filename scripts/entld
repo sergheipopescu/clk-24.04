@@ -20,7 +20,7 @@ genpass() {
 	echo -e "\nThe $fqdn password is:	$fqdnpass\nThe $fqdn argon hash is:	$argon" | sudo tee --append /root/salt > /dev/null; 
 
 	echo -e 'CREATE DATABASE `$fqdn`;
-		GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON `$fqdn`.* TO `$fqdn`@"localhost" IDENTIFIED BY "$fqdnpass";
+		GRANT SELECT, ALTER, INSERT, UPDATE, DELETE, CREATE, DROP ON `$fqdn`.* TO `$fqdn`@"localhost" IDENTIFIED BY "$fqdnpass";
 		FLUSH PRIVILEGES;
 		USE pftpd;
 		INSERT INTO ftpd (User, status, Password, Uid, Gid, Dir, ULBandwidth, DLBandwidth, comment, ipaccess, QuotaSize, QuotaFiles) VALUES ("$fqdn", "1", "$argon", "2001", "33", "/var/www/$fqdn", "0", "0", "", "*", "0", "0");

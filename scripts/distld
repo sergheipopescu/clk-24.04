@@ -1,0 +1,42 @@
+#!/bin/bash
+# shellcheck disable=SC2016
+
+set -a										# export all variables
+
+mdbpass=$(sudo grep -oP "mariaDB password is:\s+\K\w+" /root/salt)		# get MariaDB root password
+
+belete () {
+
+	rm -f /etc/nginx/sites-available/"$fqdn"
+	rm -f /etc/nginx/sites-enabled/"$fqdn"
+	rm -f /etc/apache2/sites-available/"$fqdn".conf
+	rm -f /etc/apache2/sites-enabled/"$fqdn".conf
+	rm -rf /var/www/"$fqdn"
+	rm -rf /etc/letsencrypt/archive/"$fqdn"
+	rm -rf /etc/letsencrypt/live/"$fqdn"
+	rm -f /etc/letsencrypt/renewal/"$fqdn".conf
+
+	echo -e 'DROP DATABASE IF EXISTS `$fqdn`;
+		DROP USER IF EXISTS `$fqdn`@"localhost";
+	'| envsubst | mariadb -umariadmin -p"$mdbpass";
+
+}
+
+
+
+if [[ "$*" == "" ]]; then											# if no arguments
+
+	echo
+
+	read -r -p "Enter domain name: " fqdn	
+
+	belete
+
+else
+	for fqdn in "$@"; do
+
+		belete
+
+	done
+fi
+
