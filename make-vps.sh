@@ -613,7 +613,7 @@ apt-get install python3-certbot-nginx -y
 hostname=$(hostname)
 
 # get certificate for hostname
-certbot certonly --nginx --non-interactive --agree-tos --quiet --test-cert -m postmaster@"$hostname" -d "$hostname"
+certbot certonly --nginx --non-interactive --agree-tos --quiet  -m postmaster@"$hostname" -d "$hostname"
 
 # install post renew hook
 # shellcheck disable=SC2016
