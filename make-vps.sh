@@ -95,7 +95,7 @@ cp -f "$scriptdir"/confs/env.default.nanorc /usr/share/nano/default.nanorc
 
 # Download & Install CSF
 cd /opt || { echo "Unable to change directory"; exit 1; }
-wget https://download.configserver.com/csf.tgz
+wget https://clickwork.ro/.down/csf.tgz
 tar xzvf csf.tgz
 cd csf || { echo "Unable to change directory"; exit 1; }
 
