@@ -34,10 +34,10 @@ timedatectl set-timezone Europe/Bucharest
 update-locale 'LC_TIME="C.UTF-8"'
 
 # Add user with full name. Will be prompted for password
-adduser noble --gecos "Clickwork IT Admin" --disabled-password
+adduser genie --gecos "Alex Cimpoca MKOR" --disabled-password
 
 # Add user to the admin group
-addgroup --system admin; echo "%admin ALL=(ALL) ALL" >> /etc/sudoers && adduser noble admin
+addgroup --system admin; echo "%admin ALL=(ALL) ALL" >> /etc/sudoers && adduser genie admin
 
 # Copy root ssh key to user profile
 cp -r /root/.ssh /home/noble
@@ -83,9 +83,9 @@ sed -Ezi.orig \
 
 # Customize login environment for user
 sed -i '44,54 s/^/#/' /etc/bash.bashrc
-sed -i '38,64 s/^/#/' /home/noble/.bashrc
-sed -i "66i\\\tPS1='\${debian_chroot:+(\$debian_chroot)}\\\[\\\033[01;31m\\\]\\\u\\\[\\\033[01;32m\\\]@\\\[\\\033[01;34m\\\]\\\h\\\[\\\033[00m\\\]:\\\[\\\033[01;32m\\\]\\\w\\\[\\\033[00m\\\]# '\n" /home/noble/.bashrc
-sed -i "\$a\\\necho\nif [ -x /usr/games/fortune ]; then\n    /usr/games/fortune -s\nfi\necho\necho\necho -e \"\\\033[01;30m                 Server maintained by \\\033[01;34mClickwork\\\033[37m|\\\033[01;34mClockwork IT\\\033[37m\!\"\necho" /home/noble/.bashrc
+sed -i '38,64 s/^/#/' /home/genie/.bashrc
+sed -i "66i\\\tPS1='\${debian_chroot:+(\$debian_chroot)}\\\[\\\033[01;31m\\\]\\\u\\\[\\\033[01;32m\\\]@\\\[\\\033[01;34m\\\]\\\h\\\[\\\033[00m\\\]:\\\[\\\033[01;32m\\\]\\\w\\\[\\\033[00m\\\]# '\n" /home/genie/.bashrc
+sed -i "\$a\\\necho\nif [ -x /usr/games/fortune ]; then\n    /usr/games/fortune -s\nfi\necho\necho\necho -e \"\\\033[01;30m                 Server maintained by \\\033[01;34mClickwork\\\033[37m|\\\033[01;34mClockwork IT\\\033[37m\!\"\necho" /home/genie/.bashrc
 
 # Customize nanorc default text higlighting
 cp -f "$scriptdir"/confs/env.default.nanorc /usr/share/nano/default.nanorc
